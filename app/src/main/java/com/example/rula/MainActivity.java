@@ -1,6 +1,7 @@
 package com.example.rula;
 
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -77,11 +78,20 @@ public class MainActivity extends AppCompatActivity {
         });
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //String name = listView.getItemAtPosition(position);
+                Intent intent = new Intent(view.getContext(), TripDetailActivity.class);
                 String key = myKeys.get(position - 1);
-                Toast.makeText(MainActivity.this, key+"", Toast.LENGTH_SHORT).show();
+                String name = (String) listView.getItemAtPosition(position);
+                //Toast.makeText(MainActivity.this, key+"", Toast.LENGTH_SHORT).show(); //show toast with key, only for testing purposes
+
+                Bundle extras = new Bundle();
+                extras.putString("tripKey", key);
+                extras.putString("tripName", name);
+                intent.putExtras(extras);
+
+                startActivity(intent);
             }
         });
     }
