@@ -1,6 +1,5 @@
 package com.example.rula;
 
-
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -26,7 +25,8 @@ public class MainActivity extends AppCompatActivity {
     private DatabaseReference myDatabase;
     private ListView listView;
     private ArrayList<String> arrayList = new ArrayList<>();
-    private ArrayList<String> myKeys = new ArrayList<>();
+    private ArrayList<Trip> myTrips = new ArrayList<>();
+    //private ArrayList<String> myKeys = new ArrayList<>();
     private ArrayAdapter<String> adapter;
 
     @Override
@@ -50,9 +50,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 String key = dataSnapshot.getKey();
-                String string = dataSnapshot.getValue(String.class);
-                arrayList.add("\n"+string+"\n");
-                myKeys.add(key);
+                Trip myTrip = dataSnapshot.getValue(Trip.class);
+                myTrips.add(myTrip);
+                arrayList.add("\n"+myTrip.getName()+"\n");
+                //myKeys.add(key);
                 adapter.notifyDataSetChanged();
             }
 
@@ -82,13 +83,17 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(view.getContext(), TripDetailActivity.class);
-                String key = myKeys.get(position - 1);
+                //String key = myKeys.get(position - 1);
                 String name = (String) listView.getItemAtPosition(position);
+                Trip selected = myTrips.get(position-1);
                 //Toast.makeText(MainActivity.this, key+"", Toast.LENGTH_SHORT).show(); //show toast with key, only for testing purposes
 
                 Bundle extras = new Bundle();
-                extras.putString("tripKey", key);
-                extras.putString("tripName", name);
+                //extras.putString("tripKey", key);
+                extras.putString("name", selected.getName());
+                extras.putString("location", selected.getLocation());
+                extras.putString("date", selected.getDate());
+                extras.putString("difficulty", Integer.toString(selected.getDifficulty()));
                 intent.putExtras(extras);
 
                 startActivity(intent);
