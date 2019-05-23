@@ -6,7 +6,7 @@ public class Trip {
     private Integer difficulty;
     private String date;
     private Integer maxPeople;
-
+//test
     public Trip(){
 
     }
