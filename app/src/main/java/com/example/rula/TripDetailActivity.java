@@ -5,10 +5,9 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.TextView;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
@@ -16,6 +15,8 @@ import com.google.firebase.database.ValueEventListener;
 public class TripDetailActivity extends AppCompatActivity {
 
     private DatabaseReference myDatabase;
+
+    private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +26,12 @@ public class TripDetailActivity extends AppCompatActivity {
         myDatabase = FirebaseDatabase.getInstance().getReference();
         Intent intent = getIntent();
         Trip trip = createTrip(intent.getExtras());
+
+        Button btnRegister = findViewById(R.id.btnRegister);
+        if(trip.getMaxPeople() <= 0 ){
+            btnRegister.setEnabled(false);
+            btnRegister.setBackgroundColor(0xFFEAEAEA);
+        }
 
         TextView txtName = findViewById(R.id.txtName);
         txtName.setText(trip.getName());
@@ -38,6 +45,9 @@ public class TripDetailActivity extends AppCompatActivity {
         TextView txtLocation = findViewById(R.id.txtLocation);
         txtLocation.setText(trip.getLocation());
 
+        TextView txtAvailable = findViewById(R.id.txtAvailable);
+        txtAvailable.setText(Integer.toString(trip.getMaxPeople()));
+
     }
 
     private Trip createTrip(Bundle extras){
@@ -46,6 +56,10 @@ public class TripDetailActivity extends AppCompatActivity {
         String location = extras.getString("location");
         String date = extras.getString("date");
         Integer difficulty = Integer.parseInt(extras.getString("difficulty"));
-        return new Trip(name, location, difficulty, date);
+        Integer maxPeople = Integer.parseInt(extras.getString("maxPeople"));
+        return new Trip(name, location, difficulty, date, maxPeople);
     }
+
 }
+
+

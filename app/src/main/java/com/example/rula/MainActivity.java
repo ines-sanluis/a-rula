@@ -94,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
                 extras.putString("location", selected.getLocation());
                 extras.putString("date", selected.getDate());
                 extras.putString("difficulty", Integer.toString(selected.getDifficulty()));
+                extras.putString("maxPeople", Integer.toString(selected.getMaxPeople()));
                 intent.putExtras(extras);
 
                 startActivity(intent);
