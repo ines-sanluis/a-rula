@@ -1,23 +1,23 @@
 package com.example.rula;
 
 import android.content.Intent;
-import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 public class TripDetailActivity extends AppCompatActivity{
 
@@ -30,6 +30,15 @@ public class TripDetailActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trip_detail);
+        ((MapFragment) getFragmentManager().findFragmentById(R.id.myMap)).getMapAsync(new OnMapReadyCallback() {
+                                                                                          @Override
+                                                                                          public void onMapReady(GoogleMap map) {
+                                                                                              mMap = map;
+                                                                                              LatLng seattle = new LatLng(47.6062095, -122.3320708);
+                                                                                              mMap.addMarker(new MarkerOptions().position(seattle).title("Seattle"));
+                                                                                              mMap.moveCamera(CameraUpdateFactory.newLatLng(seattle));
+                                                                                          }
+                                                                                      });
 
         myDatabase = FirebaseDatabase.getInstance().getReference();
         Intent intent = getIntent();
@@ -55,26 +64,9 @@ public class TripDetailActivity extends AppCompatActivity{
 
         TextView txtAvailable = findViewById(R.id.txtAvailable);
         txtAvailable.setText(Integer.toString(trip.getMaxPeople()));
-
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.g_map);
-        if (mapFragment != null) {
-            mapFragment.getMapAsync(new OnMapReadyCallback() {
-                @Override
-                public void onMapReady(GoogleMap map) {
-                    mMap = map;
-
-                    //seattle coordinates
-                    LatLng seattle = new LatLng(47.6062095, -122.3320708);
-                    mMap.addMarker(new MarkerOptions().position(seattle).title("Seattle"));
-                    mMap.moveCamera(CameraUpdateFactory.newLatLng(seattle));
-                }
-            });
-        } else {
-            Toast.makeText(this, "Error - Map Fragment was null!!", Toast.LENGTH_SHORT).show();
-        }
-
-
+        
     }
+
 
     private Trip createTrip(Bundle extras){
         String key = extras.getString("key");

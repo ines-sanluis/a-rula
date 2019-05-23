@@ -137,7 +137,7 @@
         app:layout_constraintTop_toTopOf="@+id/lblAvailable" />
 
     <fragment
-        android:id="@+id/g_map"
+        android:id="@+id/myMap"
         android:name="com.google.android.gms.maps.MapFragment"
         android:layout_width="356dp"
         android:layout_height="239dp"
