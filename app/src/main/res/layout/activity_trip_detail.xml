@@ -38,9 +38,9 @@
 
     <TextView
         android:id="@+id/txtDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_width="150dp"
+        android:layout_height="32dp"
+        android:layout_marginTop="12dp"
         android:text="29th of may 20:00"
         android:textColor="@color/common_google_signin_btn_text_dark_focused"
         android:textSize="18sp"
@@ -48,34 +48,12 @@
         app:layout_constraintStart_toStartOf="@+id/txtName"
         app:layout_constraintTop_toBottomOf="@+id/txtName" />
 
-    <ScrollView
-        android:id="@+id/scroll"
-        android:layout_width="395dp"
-        android:layout_height="458dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" />
-    </ScrollView>
-
     <TextView
         android:id="@+id/lblDifficulty"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:text="Difficulty:"
+        android:text="Difficulty"
         android:textColor="@color/common_google_signin_btn_text_dark_focused"
         android:textSize="18sp"
         app:layout_constraintStart_toStartOf="@+id/lblAvailable"
@@ -86,7 +64,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:text="Location:"
+        android:text="Location"
         android:textColor="@color/common_google_signin_btn_text_dark_focused"
         android:textSize="18sp"
         app:layout_constraintStart_toStartOf="@+id/lblDifficulty"
@@ -97,33 +75,23 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="184dp"
-        android:text="Available places:"
+        android:text="Available places"
         android:textColor="@color/common_google_signin_btn_text_dark_focused"
         android:textSize="18sp"
         app:layout_constraintStart_toStartOf="@+id/txtName"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/txtDifficulty"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="24dp"
-        android:text="2.5"
-        android:textSize="18sp"
-        app:layout_constraintStart_toEndOf="@+id/lblDifficulty"
-        app:layout_constraintTop_toBottomOf="@+id/txtAvailable" />
-
-    <TextView
         android:id="@+id/txtLocation"
         android:layout_width="wrap_content"
         android:layout_height="26dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
         android:layout_marginTop="24dp"
         android:text="Kraków"
         android:textSize="18sp"
-        app:layout_constraintStart_toStartOf="@+id/txtDifficulty"
-        app:layout_constraintTop_toBottomOf="@+id/txtDifficulty" />
+        app:layout_constraintStart_toEndOf="@+id/lblLocation"
+        app:layout_constraintTop_toBottomOf="@+id/lblDifficulty" />
 
     <TextView
         android:id="@+id/txtAvailable"
@@ -145,5 +113,55 @@
         android:layout_marginRight="28dp"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtLocation" />
+
+    <ImageView
+        android:id="@+id/dif1"
+        android:layout_width="22dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintStart_toEndOf="@+id/lblDifficulty"
+        app:layout_constraintTop_toTopOf="@+id/lblDifficulty"
+        app:srcCompat="@android:drawable/presence_online" />
+
+    <ImageView
+        android:id="@+id/dif2"
+        android:layout_width="22dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintStart_toEndOf="@+id/dif1"
+        app:layout_constraintTop_toTopOf="@+id/lblDifficulty"
+        app:srcCompat="@android:drawable/presence_online" />
+
+    <ImageView
+        android:id="@+id/dif5"
+        android:layout_width="22dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintStart_toEndOf="@+id/dif4"
+        app:layout_constraintTop_toTopOf="@+id/lblDifficulty"
+        app:srcCompat="@android:drawable/presence_online" />
+
+    <ImageView
+        android:id="@+id/dif3"
+        android:layout_width="22dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintStart_toEndOf="@+id/dif2"
+        app:layout_constraintTop_toTopOf="@+id/lblDifficulty"
+        app:srcCompat="@android:drawable/presence_online" />
+
+    <ImageView
+        android:id="@+id/dif4"
+        android:layout_width="22dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintStart_toEndOf="@+id/dif3"
+        app:layout_constraintTop_toTopOf="@+id/lblDifficulty"
+        app:srcCompat="@android:drawable/presence_online" />
 
 </android.support.constraint.ConstraintLayout>

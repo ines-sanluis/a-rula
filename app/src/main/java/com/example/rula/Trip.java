@@ -4,6 +4,7 @@ package com.example.rula;
 public class Trip {
     private String latitude;
     private String longitude;
+    private String locationTag;
     private String name;
     private String difficulty;
     private String date;
@@ -13,13 +14,14 @@ public class Trip {
 
     }
 
-    public Trip(String name, String latitude, String longitude, String difficulty, String date, String maxPeople){
+    public Trip(String name, String latitude, String longitude, String locationTag, String difficulty, String date, String maxPeople){
         this.name = name;
         this.latitude = latitude;
         this.difficulty = difficulty;
         this.date = date;
         this.maxPeople = maxPeople;
         this.longitude = longitude;
+        this.locationTag = locationTag;
     }
 
     public String getName(){
@@ -45,4 +47,6 @@ public class Trip {
     }
 
     public String getMaxPeople() { return this.maxPeople; }
+
+    public String getLocationTag() { return this.locationTag; }
 }

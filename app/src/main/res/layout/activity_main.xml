@@ -9,7 +9,32 @@
 
     <ListView
         android:id="@+id/trips_list_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:cacheColorHint="@color/common_google_signin_btn_text_dark_focused" />
+        android:layout_width="281dp"
+        android:layout_height="528dp"
+        android:layout_below="@+id/lblUpcoming"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginStart="65dp"
+        android:layout_marginLeft="65dp"
+        android:layout_marginTop="24dp"
+        android:cacheColorHint="@color/common_google_signin_btn_text_dark_focused"
+        android:divider="@color/colorPrimaryDark"
+        tools:listitem="@layout/list_row" />
+
+    <TextView
+        android:id="@+id/lblUpcoming"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="86dp"
+        android:layout_marginLeft="86dp"
+        android:layout_marginTop="65dp"
+        android:text="Upcoming trips"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+        android:textColor="@color/common_google_signin_btn_text_dark_focused"
+        android:textStyle="bold" />
+
+
 </RelativeLayout>
