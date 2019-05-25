@@ -7,19 +7,19 @@ public class Trip {
     private String name;
     private String difficulty;
     private String date;
-    private String maxPeople;
+    private String available;
 
     public Trip(){
 
     }
 
-    public Trip(String key, String name, Location location, String difficulty, String date, String maxPeople){
+    public Trip(String key, String name, Location location, String difficulty, String date, String available){
         this.key = key;
         this.name = name;
         this.location = location;
         this.difficulty = difficulty;
         this.date = date;
-        this.maxPeople = maxPeople;
+        this.available = available;
     }
 
     public String getKey(){ return this.key; }
@@ -32,11 +32,9 @@ public class Trip {
         return this.location.getLatitude();
     }
 
-
     public String getLongitude(){
         return this.location.getLongitude();
     }
-
 
     public String getDifficulty(){
         return this.difficulty;
@@ -46,7 +44,7 @@ public class Trip {
         return this.date;
     }
 
-    public String getMaxPeople() { return this.maxPeople; }
+    public String getAvailable() { return this.available; }
 
     public String getLocationTag() { return this.location.getTag(); }
 }

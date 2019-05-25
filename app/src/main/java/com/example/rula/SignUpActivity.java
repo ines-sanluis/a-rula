@@ -86,9 +86,9 @@ public class SignUpActivity extends AppCompatActivity {
         String locationTag = extras.getString("locationTag");
         String date = extras.getString("date");
         String difficulty = extras.getString("difficulty");
-        String maxPeople = extras.getString("maxPeople");
+        String available = extras.getString("available");
         Location location = new Location(latitude, longitude, locationTag);
-        return new Trip(key, name, location, difficulty, date, maxPeople);
+        return new Trip(key, name, location, difficulty, date, available);
     }
 
     private boolean isValidEmail(String email) {
@@ -113,7 +113,7 @@ public class SignUpActivity extends AppCompatActivity {
                 extras.putString("longitude", trip.getLongitude());
                 extras.putString("date", trip.getDate());
                 extras.putString("difficulty", trip.getDifficulty());
-                extras.putString("maxPeople", trip.getMaxPeople());
+                extras.putString("available", trip.getAvailable());
                 extras.putString("locationTag", trip.getLocationTag());
                 intent.putExtras(extras);
                 startActivity(intent);

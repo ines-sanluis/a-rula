@@ -1,10 +1,13 @@
 package com.example.rula;
 
 import android.content.Intent;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -91,24 +94,25 @@ public class MainActivity extends AppCompatActivity {
                 String latitude = null;
                 String longitude = null;
                 String locationTag = null;
+                long nBookings = 0;
 
                 for(DataSnapshot attribute : dataSnapshot.getChildren()) { //trips
-                    for (DataSnapshot nested : attribute.getChildren()) {
-                        switch(nested.getKey()){
-                            case "lat": latitude = (String) nested.getValue(); break;
-                            case"lon": longitude = (String) nested.getValue(); break;
-                            case "tag": locationTag = (String) nested.getValue(); break;
-                        }
-                    }
+
                     switch (attribute.getKey()) {
+                        case "location":
+                            latitude = (String) attribute.child("lat").getValue();
+                            longitude = (String) attribute.child("lon").getValue();
+                            locationTag = (String) attribute.child("tag").getValue();
+                            break;
                         case "date": date = (String) attribute.getValue(); break;
                         case "difficulty": difficulty = (String) attribute.getValue(); break;
                         case "maxPeople": maxPeople = (String) attribute.getValue(); break;
                         case "name": name = (String) attribute.getValue(); break;
+                        case "bookings": nBookings = attribute.getChildrenCount(); break;
                     }
                 }
                 Location location = new Location(latitude, longitude, locationTag);
-                return new Trip(key, name, location, difficulty, date, maxPeople);
+                return new Trip(key, name, location, difficulty, date, Long.toString(Long.parseLong(maxPeople)-nBookings));
             }
         });
 
@@ -126,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
                 extras.putString("longitude", selected.getLongitude());
                 extras.putString("date", selected.getDate());
                 extras.putString("difficulty", selected.getDifficulty());
-                extras.putString("maxPeople", selected.getMaxPeople());
+                extras.putString("available", selected.getAvailable());
                 extras.putString("locationTag", selected.getLocationTag());
                 intent.putExtras(extras);
 

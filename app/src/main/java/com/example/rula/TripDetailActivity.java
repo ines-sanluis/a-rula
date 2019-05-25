@@ -38,7 +38,7 @@ public class TripDetailActivity extends AppCompatActivity implements OnMapReadyC
         ((MapFragment) getFragmentManager().findFragmentById(R.id.myMap)).getMapAsync(this);
         Button btnRegister = findViewById(R.id.btnRegister);
 
-        if(Integer.parseInt(trip.getMaxPeople()) <= 0 ){
+        if(Integer.parseInt(trip.getAvailable()) <= 0 ){
             btnRegister.setVisibility(View.INVISIBLE);
             TextView lbl = findViewById(R.id.lblAvailable);
             lbl.setText("No available places");
@@ -54,7 +54,7 @@ public class TripDetailActivity extends AppCompatActivity implements OnMapReadyC
         TextView txtLocation = findViewById(R.id.txtLocation);
         txtLocation.setText(trip.getLocationTag());
         TextView txtAvailable = findViewById(R.id.txtAvailable);
-        txtAvailable.setText(trip.getMaxPeople());
+        txtAvailable.setText(trip.getAvailable());
 
     }
 
@@ -67,7 +67,7 @@ public class TripDetailActivity extends AppCompatActivity implements OnMapReadyC
         extras.putString("longitude", this.trip.getLongitude());
         extras.putString("date", this.trip.getDate());
         extras.putString("difficulty", this.trip.getDifficulty());
-        extras.putString("maxPeople", this.trip.getMaxPeople());
+        extras.putString("available", this.trip.getAvailable());
         extras.putString("locationTag", this.trip.getLocationTag());
         intent.putExtras(extras);
         intent.putExtras(stuff);
@@ -160,9 +160,9 @@ public class TripDetailActivity extends AppCompatActivity implements OnMapReadyC
         String locationTag = extras.getString("locationTag");
         String date = extras.getString("date");
         String difficulty = extras.getString("difficulty");
-        String maxPeople = extras.getString("maxPeople");
+        String available = extras.getString("available");
         Location location = new Location(latitude, longitude, locationTag);
-        return new Trip(key, name, location, difficulty, date, maxPeople);
+        return new Trip(key, name, location, difficulty, date, available);
     }
 
     @Override
