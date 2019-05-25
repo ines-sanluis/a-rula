@@ -64,8 +64,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
                 /*
-                Not working
-
                 String key = dataSnapshot.getKey();
                 Integer position = myKeys.indexOf(key);
                 myKeys.remove(position);

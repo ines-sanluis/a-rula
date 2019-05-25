@@ -24,28 +24,31 @@
         android:textStyle="bold" />
 
     <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" />
-    </ScrollView>
-
-    <ListView
-        android:id="@+id/trips_list_view"
-        android:layout_width="357dp"
-        android:layout_height="525dp"
+        android:layout_width="365dp"
+        android:layout_height="461dp"
         android:layout_below="@+id/lblUpcoming"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_marginStart="30dp"
-        android:layout_marginLeft="30dp"
-        android:layout_marginTop="27dp"
-        android:cacheColorHint="@color/common_google_signin_btn_text_dark_focused"
-        android:divider="@color/colorPrimaryDark"
-        tools:listitem="@layout/list_row" />
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="47dp"
+        android:layout_marginEnd="26dp"
+        android:layout_marginRight="26dp">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ListView
+                android:id="@+id/trips_list_view"
+                android:layout_width="358dp"
+                android:layout_height="436dp"
+                android:layout_marginTop="16dp"
+                android:cacheColorHint="@color/common_google_signin_btn_text_dark_focused"
+                android:divider="@color/colorPrimaryDark"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:listitem="@layout/list_row" />
+        </android.support.constraint.ConstraintLayout>
+    </ScrollView>
 
 
 </RelativeLayout>
