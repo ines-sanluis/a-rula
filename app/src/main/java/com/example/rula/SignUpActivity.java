@@ -75,6 +75,8 @@ public class SignUpActivity extends AppCompatActivity {
         if(correct) {
             reference.push().setValue(new Reservation(name, email, phone, nPeople));
             Toast.makeText(getBaseContext(), "Data inserted successfully!", Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(getBaseContext(), MainActivity.class);
+            startActivity(intent);
         }
     }
 

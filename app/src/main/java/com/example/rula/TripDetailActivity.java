@@ -34,12 +34,14 @@ public class TripDetailActivity extends AppCompatActivity implements OnMapReadyC
 
         myDatabase = FirebaseDatabase.getInstance().getReference();
         Intent intent = getIntent();
+
         trip = createTrip(intent.getExtras());
         ((MapFragment) getFragmentManager().findFragmentById(R.id.myMap)).getMapAsync(this);
-        Button btnRegister = findViewById(R.id.btnRegister);
-
+        Button btnRegister = findViewById(R.id.btnReturn);
         if(Integer.parseInt(trip.getAvailable()) <= 0 ){
-            btnRegister.setVisibility(View.INVISIBLE);
+            btnRegister.setClickable(false);
+            btnRegister.setBackgroundColor(0xFFEDEDED);
+            btnRegister.setTextColor(0xFFC6C6C6);
             TextView lbl = findViewById(R.id.lblAvailable);
             lbl.setText("No available places");
             TextView txtAvailable = findViewById(R.id.txtAvailable);
