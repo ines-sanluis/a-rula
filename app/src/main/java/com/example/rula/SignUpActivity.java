@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,9 +26,9 @@ public class SignUpActivity extends AppCompatActivity {
         trip = createTrip(intent.getExtras());
         reference = FirebaseDatabase.getInstance().getReference().child(trip.getKey()).child("bookings");
 
-        TextView txtName = findViewById(R.id.txtName);
+        TextView txtName = findViewById(R.id.lblTripName);
         txtName.setText(trip.getName());
-        TextView txtDate = findViewById(R.id.txtDate);
+        TextView txtDate = findViewById(R.id.lblTripDate);
         txtDate.setText(trip.getDate());
     }
 
@@ -36,14 +37,41 @@ public class SignUpActivity extends AppCompatActivity {
         startActivity(switchActivity);
     }
 
-    public void onSaveButtonClick (View v) {
+    public void onBookButtonClick (View v) {
+        Boolean correct = true;
         EditText aux;
-        aux = findViewById(R.id.editName);     String name = aux.getText().toString();
-        aux = findViewById(R.id.editEmail);    String email = aux.getText().toString();
-        aux = findViewById(R.id.editPhone);    String phone = aux.getText().toString();
-        aux = findViewById(R.id.editPeopleNo); String nPeople = aux.getText().toString();
-        reference.push().setValue(new Reservation(name, email, phone, nPeople));
-        Toast.makeText(getBaseContext(), "Data inserted successfully!", Toast.LENGTH_LONG).show();
+        aux = findViewById(R.id.txtName);
+        String name = aux.getText().toString();
+        if(name.isEmpty()){
+            aux.setError("Please enter a name");
+            correct = false;
+        }
+        aux = findViewById(R.id.txtEmail);
+        String email = aux.getText().toString();
+        if(email.isEmpty()){
+            aux.setError("Please enter an email");
+            correct = false;
+        }
+        if(!isValidEmail(email)){
+            aux.setError("Please enter a valid email");
+            correct = false;
+        }
+        aux = findViewById(R.id.txtPhone);
+        String phone = aux.getText().toString();
+        if(phone.isEmpty()){
+            aux.setError("Please enter a phone");
+            correct = false;
+        }
+        if(!isValidPhone(phone)){
+            aux.setError("Please enter a valid phone");
+            correct = false;
+        }
+        Spinner s = findViewById(R.id.txtPeople);
+        String nPeople = s.getSelectedItem().toString();
+        if(correct) {
+            reference.push().setValue(new Reservation(name, email, phone, nPeople));
+            Toast.makeText(getBaseContext(), "Data inserted successfully!", Toast.LENGTH_LONG).show();
+        }
     }
 
     private Trip createTrip(Bundle extras){
@@ -58,5 +86,16 @@ public class SignUpActivity extends AppCompatActivity {
         Location location = new Location(latitude, longitude, locationTag);
         return new Trip(key, name, location, difficulty, date, maxPeople);
     }
+
+    private boolean isValidEmail(String email) {
+        String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
+        return email.matches(regex);
+    }
+
+    private boolean isValidPhone(String phone){
+        String regex = "[+ ]*[0-9]+([0-9]*[ ]*)*$";
+        return phone.matches(regex);
+    }
+
 
 }

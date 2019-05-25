@@ -3,7 +3,6 @@ package com.example.rula;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -48,9 +47,9 @@ public class TripDetailActivity extends AppCompatActivity implements OnMapReadyC
         }
 
         setDifficultyIcons(trip.getDifficulty());
-        TextView txtName = findViewById(R.id.txtName);
+        TextView txtName = findViewById(R.id.lblTripName);
         txtName.setText(trip.getName());
-        TextView txtDate = findViewById(R.id.txtDate);
+        TextView txtDate = findViewById(R.id.lblTripDate);
         txtDate.setText(trip.getDate());
         TextView txtLocation = findViewById(R.id.txtLocation);
         txtLocation.setText(trip.getLocationTag());

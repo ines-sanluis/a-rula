@@ -1,3 +1,9 @@
 <resources>
-    <string name="app_name">Rula</string>
+    <string name="app_name">A Rula</string>
+    <string-array name="spinner_people">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+    </string-array>
 </resources>

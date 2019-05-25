@@ -24,7 +24,7 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
-        android:id="@+id/txtName"
+        android:id="@+id/lblTripName"
         android:layout_width="362dp"
         android:layout_height="55dp"
         android:layout_marginStart="32dp"
@@ -38,7 +38,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/txtDate"
+        android:id="@+id/lblTripDate"
         android:layout_width="150dp"
         android:layout_height="32dp"
         android:layout_marginTop="12dp"
@@ -46,15 +46,15 @@
         android:textColor="@color/common_google_signin_btn_text_dark_focused"
         android:textSize="18sp"
         android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="@+id/txtName"
-        app:layout_constraintTop_toBottomOf="@+id/txtName" />
+        app:layout_constraintStart_toStartOf="@+id/lblTripName"
+        app:layout_constraintTop_toBottomOf="@+id/lblTripName" />
 
     <ScrollView
         android:layout_width="431dp"
         android:layout_height="483dp"
         android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtDate">
+        app:layout_constraintTop_toBottomOf="@+id/lblTripDate">
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
