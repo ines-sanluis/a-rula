@@ -2,9 +2,8 @@ package com.example.rula;
 
 
 public class Trip {
-    private String latitude;
-    private String longitude;
-    private String locationTag;
+    private Location location;
+    private String key;
     private String name;
     private String difficulty;
     private String date;
@@ -14,27 +13,28 @@ public class Trip {
 
     }
 
-    public Trip(String name, String latitude, String longitude, String locationTag, String difficulty, String date, String maxPeople){
+    public Trip(String key, String name, Location location, String difficulty, String date, String maxPeople){
+        this.key = key;
         this.name = name;
-        this.latitude = latitude;
+        this.location = location;
         this.difficulty = difficulty;
         this.date = date;
         this.maxPeople = maxPeople;
-        this.longitude = longitude;
-        this.locationTag = locationTag;
     }
+
+    public String getKey(){ return this.key; }
 
     public String getName(){
         return this.name;
     }
 
     public String getLatitude(){
-        return this.latitude;
+        return this.location.getLatitude();
     }
 
 
     public String getLongitude(){
-        return this.longitude;
+        return this.location.getLongitude();
     }
 
 
@@ -48,5 +48,5 @@ public class Trip {
 
     public String getMaxPeople() { return this.maxPeople; }
 
-    public String getLocationTag() { return this.locationTag; }
+    public String getLocationTag() { return this.location.getTag(); }
 }

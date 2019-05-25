@@ -13,13 +13,8 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class SignUpActivity extends AppCompatActivity {
 
-    DatabaseReference reference;
-
-    EditText name;
-    EditText email;
-    EditText phone;
-    EditText nPeople;
-
+    private DatabaseReference reference;
+    private Trip trip;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,18 +22,13 @@ public class SignUpActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sign_up);
 
         Intent intent = getIntent();
+        trip = createTrip(intent.getExtras());
+        reference = FirebaseDatabase.getInstance().getReference().child(trip.getKey()).child("bookings");
 
         TextView txtName = findViewById(R.id.txtName);
-        txtName.setText(intent.getExtras().getString("name"));
+        txtName.setText(trip.getName());
         TextView txtDate = findViewById(R.id.txtDate);
-        txtDate.setText(intent.getExtras().getString("date"));
-
-        reference = FirebaseDatabase.getInstance().getReference().child("Reservation");
-
-        name = findViewById(R.id.editName);
-        email = findViewById(R.id.editEmail);
-        phone = findViewById(R.id.editPhone);
-        nPeople = findViewById(R.id.editPeopleNo);
+        txtDate.setText(trip.getDate());
     }
 
     public void onButtonClick (View v) {
@@ -47,8 +37,26 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     public void onSaveButtonClick (View v) {
-        Reservation reservation = new Reservation(name.getText().toString(), email.getText().toString(), phone.getText().toString(), nPeople.getText().toString());
-        reference.push().setValue(reservation);
-        Toast.makeText(getBaseContext(), "Data inserted succesfully!", Toast.LENGTH_LONG).show();
+        EditText aux;
+        aux = findViewById(R.id.editName);     String name = aux.getText().toString();
+        aux = findViewById(R.id.editEmail);    String email = aux.getText().toString();
+        aux = findViewById(R.id.editPhone);    String phone = aux.getText().toString();
+        aux = findViewById(R.id.editPeopleNo); String nPeople = aux.getText().toString();
+        reference.push().setValue(new Reservation(name, email, phone, nPeople));
+        Toast.makeText(getBaseContext(), "Data inserted successfully!", Toast.LENGTH_LONG).show();
     }
+
+    private Trip createTrip(Bundle extras){
+        String key = extras.getString("key");
+        String name = extras.getString("name");
+        String latitude = extras.getString("latitude");
+        String longitude = extras.getString("longitude");
+        String locationTag = extras.getString("locationTag");
+        String date = extras.getString("date");
+        String difficulty = extras.getString("difficulty");
+        String maxPeople = extras.getString("maxPeople");
+        Location location = new Location(latitude, longitude, locationTag);
+        return new Trip(key, name, location, difficulty, date, maxPeople);
+    }
+
 }

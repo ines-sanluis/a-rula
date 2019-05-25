@@ -5,12 +5,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -42,7 +40,6 @@ public class MainActivity extends AppCompatActivity {
         myDatabase.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                if(dataSnapshot.getKey().equals(("Reservation"))) return; //not show null in list, change if we modify databsae
                 Trip myTrip = this.createTrip(dataSnapshot);
                 myKeys.add(dataSnapshot.getKey());
                 myTrips.add(myTrip);
@@ -53,7 +50,6 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                if(dataSnapshot.getKey().equals(("Reservation"))) return; //not show null in list, change if we modify database
                 String key = dataSnapshot.getKey();
                 Integer position = myKeys.indexOf(key);
                 Trip myTrip = this.createTrip(dataSnapshot);
@@ -111,7 +107,8 @@ public class MainActivity extends AppCompatActivity {
                         case "name": name = (String) attribute.getValue(); break;
                     }
                 }
-                return new Trip(name, latitude, longitude, locationTag, difficulty, date, maxPeople);
+                Location location = new Location(latitude, longitude, locationTag);
+                return new Trip(key, name, location, difficulty, date, maxPeople);
             }
         });
 
@@ -123,6 +120,7 @@ public class MainActivity extends AppCompatActivity {
                 Trip selected = myTrips.get(position);
 
                 Bundle extras = new Bundle();
+                extras.putString("key", selected.getKey());
                 extras.putString("name", selected.getName());
                 extras.putString("latitude", selected.getLatitude());
                 extras.putString("longitude", selected.getLongitude());
