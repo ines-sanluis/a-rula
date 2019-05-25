@@ -10,8 +10,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -26,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
     private ListView listView;
     private ArrayList<String> arrayList = new ArrayList<>();
     private ArrayList<Trip> myTrips = new ArrayList<>();
-    //private ArrayList<String> myKeys = new ArrayList<>();
+    private ArrayList<String> myKeys = new ArrayList<>();
     private ArrayAdapter<String> adapter;
 
     @Override
@@ -35,36 +33,44 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         myDatabase = FirebaseDatabase.getInstance().getReference();
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, arrayList);
+        adapter = new ArrayAdapter<String>(this, R.layout.list_row, R.id.textView2, arrayList);
         listView = (ListView) findViewById(R.id.trips_list_view);
-
-        TextView textView = new TextView(getApplication().getApplicationContext());
-        textView.setText("Upcoming trips");
-
-        listView.addHeaderView(textView);
-
         listView.setAdapter(adapter);
         listView.setClickable(true);
 
         myDatabase.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                String key = dataSnapshot.getKey();
-                Trip myTrip = dataSnapshot.getValue(Trip.class);
+                Trip myTrip = this.createTrip(dataSnapshot);
+                myKeys.add(dataSnapshot.getKey());
                 myTrips.add(myTrip);
                 arrayList.add("\n"+myTrip.getName()+"\n");
-                //myKeys.add(key);
+                adapter.notifyDataSetChanged();
+            }
+
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                String key = dataSnapshot.getKey();
+                Integer position = myKeys.indexOf(key);
+                Trip myTrip = this.createTrip(dataSnapshot);
+                myTrips.set(position, myTrip);
+                arrayList.set(position, "\n"+myTrip.getName()+"\n");
                 adapter.notifyDataSetChanged();
             }
 
             @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                /*
+                Not working
 
+                String key = dataSnapshot.getKey();
+                Integer position = myKeys.indexOf(key);
+                myKeys.remove(position);
+                myTrips.remove(position);
+                arrayList.remove(position);
+                adapter.notifyDataSetChanged();
+                */
             }
 
             @Override
@@ -76,6 +82,33 @@ public class MainActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
+
+            private Trip createTrip(DataSnapshot dataSnapshot) {
+                String key = dataSnapshot.getKey();
+                String name = null;
+                String difficulty = null;
+                String date = null;
+                String maxPeople = null;
+                String latitude = null;
+                String longitude = null;
+                String locationTag = null;
+                for(DataSnapshot attribute : dataSnapshot.getChildren()) { //trips
+                    for (DataSnapshot nested : attribute.getChildren()) {
+                        switch(nested.getKey()){
+                            case "lat": latitude = (String) nested.getValue(); break;
+                            case"lon": longitude = (String) nested.getValue(); break;
+                            case "tag": locationTag = (String) nested.getValue(); break;
+                        }
+                    }
+                    switch (attribute.getKey()) {
+                        case "date": date = (String) attribute.getValue(); break;
+                        case "difficulty": difficulty = (String) attribute.getValue(); break;
+                        case "maxPeople": maxPeople = (String) attribute.getValue(); break;
+                        case "name": name = (String) attribute.getValue(); break;
+                    }
+                }
+                return new Trip(name, latitude, longitude, locationTag, difficulty, date, maxPeople);
+            }
         });
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -83,23 +116,22 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(view.getContext(), TripDetailActivity.class);
-                //String key = myKeys.get(position - 1);
-                String name = (String) listView.getItemAtPosition(position);
-                Trip selected = myTrips.get(position-1);
-                //Toast.makeText(MainActivity.this, key+"", Toast.LENGTH_SHORT).show(); //show toast with key, only for testing purposes
+                Trip selected = myTrips.get(position);
 
                 Bundle extras = new Bundle();
-                //extras.putString("tripKey", key);
                 extras.putString("name", selected.getName());
-                extras.putString("location", selected.getLocation());
+                extras.putString("latitude", selected.getLatitude());
+                extras.putString("longitude", selected.getLongitude());
                 extras.putString("date", selected.getDate());
-                extras.putString("difficulty", Integer.toString(selected.getDifficulty()));
-                extras.putString("maxPeople", Integer.toString(selected.getMaxPeople()));
+                extras.putString("difficulty", selected.getDifficulty());
+                extras.putString("maxPeople", selected.getMaxPeople());
+                extras.putString("locationTag", selected.getLocationTag());
                 intent.putExtras(extras);
 
                 startActivity(intent);
             }
         });
     }
+
 
 }
