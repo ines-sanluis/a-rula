@@ -1,13 +1,16 @@
 package com.example.rula;
 
 import android.content.Intent;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -30,9 +33,10 @@ public class SignUpActivity extends AppCompatActivity {
         txtName.setText(trip.getName());
         TextView txtDate = findViewById(R.id.lblTripDate);
         txtDate.setText(trip.getDate());
+        ActionBar toolbar = getSupportActionBar();
     }
 
-    public void onButtonClick (View v) {
+    public void onReturnButtonClick (View v) {
         Intent switchActivity = new Intent(getBaseContext(), MainActivity.class);
         startActivity(switchActivity);
     }
@@ -96,6 +100,28 @@ public class SignUpActivity extends AppCompatActivity {
         String regex = "[+ ]*[0-9]+([0-9]*[ ]*)*$";
         return phone.matches(regex);
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                Intent intent = new Intent(this, TripDetailActivity.class);
+                Bundle extras = new Bundle();
+                extras.putString("key", trip.getKey());
+                extras.putString("name", trip.getName());
+                extras.putString("latitude", trip.getLatitude());
+                extras.putString("longitude", trip.getLongitude());
+                extras.putString("date", trip.getDate());
+                extras.putString("difficulty", trip.getDifficulty());
+                extras.putString("maxPeople", trip.getMaxPeople());
+                extras.putString("locationTag", trip.getLocationTag());
+                intent.putExtras(extras);
+                startActivity(intent);
+                break;
+        }
+        return true;
+    }
+
 
 
 }
