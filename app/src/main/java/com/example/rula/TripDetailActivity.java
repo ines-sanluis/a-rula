@@ -58,8 +58,9 @@ public class TripDetailActivity extends AppCompatActivity implements OnMapReadyC
         }
 
         //test stuff
-        TextView txt1 = (TextView) findViewById(R.id.txt1);
-        TextView txt2 = (TextView) findViewById(R.id.txt2);
+        /*
+        TextView txt1 = findViewById(R.id.txt1);
+        TextView txt2 = findViewById(R.id.txt2);
 
         txt1.setText("This is some text for the title");
 
@@ -70,7 +71,7 @@ public class TripDetailActivity extends AppCompatActivity implements OnMapReadyC
             strBuilder.append(msg);
 
         txt2.setText(strBuilder.toString());
-        //end of test stuff
+        */ //end of test stuff
 
         setDifficultyIcons(trip.getDifficulty());
         TextView txtName = findViewById(R.id.txtName);

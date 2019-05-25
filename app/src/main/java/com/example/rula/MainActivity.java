@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -34,13 +35,14 @@ public class MainActivity extends AppCompatActivity {
 
         myDatabase = FirebaseDatabase.getInstance().getReference();
         adapter = new ArrayAdapter<String>(this, R.layout.list_row, R.id.textView2, arrayList);
-        listView = (ListView) findViewById(R.id.trips_list_view);
+        listView = findViewById(R.id.trips_list_view);
         listView.setAdapter(adapter);
         listView.setClickable(true);
 
         myDatabase.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                if(dataSnapshot.getKey().equals(("Reservation"))) return; //not show null in list, change if we modify databsae
                 Trip myTrip = this.createTrip(dataSnapshot);
                 myKeys.add(dataSnapshot.getKey());
                 myTrips.add(myTrip);
@@ -51,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                if(dataSnapshot.getKey().equals(("Reservation"))) return; //not show null in list, change if we modify database
                 String key = dataSnapshot.getKey();
                 Integer position = myKeys.indexOf(key);
                 Trip myTrip = this.createTrip(dataSnapshot);
@@ -92,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
                 String latitude = null;
                 String longitude = null;
                 String locationTag = null;
+
                 for(DataSnapshot attribute : dataSnapshot.getChildren()) { //trips
                     for (DataSnapshot nested : attribute.getChildren()) {
                         switch(nested.getKey()){

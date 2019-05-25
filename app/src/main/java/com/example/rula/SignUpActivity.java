@@ -35,10 +35,10 @@ public class SignUpActivity extends AppCompatActivity {
 
         reference = FirebaseDatabase.getInstance().getReference().child("Reservation");
 
-        name = (EditText) findViewById(R.id.editName);
-        email = (EditText) findViewById(R.id.editEmail);
-        phone = (EditText) findViewById(R.id.editPhone);
-        nPeople = (EditText) findViewById(R.id.editPeopleNo);
+        name = findViewById(R.id.editName);
+        email = findViewById(R.id.editEmail);
+        phone = findViewById(R.id.editPhone);
+        nPeople = findViewById(R.id.editPeopleNo);
     }
 
     public void onButtonClick (View v) {
