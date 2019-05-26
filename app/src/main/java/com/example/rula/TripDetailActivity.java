@@ -15,6 +15,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -44,18 +45,21 @@ public class TripDetailActivity extends AppCompatActivity implements OnMapReadyC
         extras = intent.getExtras();
         trip = new Trip(extras.getString("key"));
         myDatabase = FirebaseDatabase.getInstance().getReference().child(trip.getKey());
+        ((MapFragment) getFragmentManager().findFragmentById(R.id.myMap)).getMapAsync(this);
 
         myDatabase.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 updateTrip(dataSnapshot);
                 updateFields(dataSnapshot.getKey());
+
             }
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 updateTrip(dataSnapshot);
                 updateFields(dataSnapshot.getKey());
+
             }
 
             @Override
@@ -74,35 +78,6 @@ public class TripDetailActivity extends AppCompatActivity implements OnMapReadyC
             }
         });
 
-    }
-
-
-
-    private Trip createTrip(String key, DataSnapshot dataSnapshot){
-        String name = (String) dataSnapshot.getValue();
-        String latitude = (String) dataSnapshot.child("lat").getValue();
-        String longitude =(String) dataSnapshot.child("lon").getValue();
-        String locationTag = (String) dataSnapshot.child("tag").getValue();
-        String date = (String) dataSnapshot.getValue();
-        String difficulty = (String) dataSnapshot.getValue();
-        String maxPeople = (String) dataSnapshot.getValue();
-        long nBookings = dataSnapshot.getChildrenCount();
-        Location location = new Location(latitude, longitude, locationTag);
-        return new Trip(key, name, location, difficulty, date, maxPeople, Long.toString(nBookings));
-    }
-
-    private Trip createTrip(Bundle extras){
-        String key = extras.getString("key");
-        String name = extras.getString("name");
-        String latitude = extras.getString("latitude");
-        String longitude = extras.getString("longitude");
-        String locationTag = extras.getString("locationTag");
-        String date = extras.getString("date");
-        String difficulty = extras.getString("difficulty");
-        String nBookings = extras.getString("nBookings");
-        String maxPeople = extras.getString("maxPeople");
-        Location location = new Location(latitude, longitude, locationTag);
-        return new Trip(key, name, location, difficulty, date, maxPeople, nBookings);
     }
 
     private void updateTrip(DataSnapshot dataSnapshot){
@@ -214,28 +189,6 @@ public class TripDetailActivity extends AppCompatActivity implements OnMapReadyC
         }
     }
 
-    private void updateFields(){
-        ((MapFragment) getFragmentManager().findFragmentById(R.id.myMap)).getMapAsync(this);
-        Button btnRegister = findViewById(R.id.btnBook);
-        if(Integer.parseInt(trip.getAvailable()) <= 0 ){
-            btnRegister.setVisibility(View.INVISIBLE);
-            TextView lbl = findViewById(R.id.lblAvailable);
-            lbl.setText("No available places");
-            TextView txtAvailable = findViewById(R.id.txtAvailable);
-            txtAvailable.setVisibility(View.INVISIBLE);
-        }
-
-        setDifficultyIcons(trip.getDifficulty());
-        TextView txtName = findViewById(R.id.lblTripName);
-        txtName.setText(trip.getName());
-        TextView txtDate = findViewById(R.id.lblTripDate);
-        txtDate.setText(trip.getDate());
-        TextView txtLocation = findViewById(R.id.txtLocation);
-        txtLocation.setText(trip.getLocationTag());
-        TextView txtAvailable = findViewById(R.id.txtAvailable);
-        txtAvailable.setText(trip.getAvailable());
-    }
-
     private void updateFields(String key){
         TextView txtAvailable = null;
         Button btnRegister = null;
@@ -243,7 +196,6 @@ public class TripDetailActivity extends AppCompatActivity implements OnMapReadyC
             case "location":
                 TextView txtLocation = findViewById(R.id.txtLocation);
                 txtLocation.setText(trip.getLocationTag());
-                ((MapFragment) getFragmentManager().findFragmentById(R.id.myMap)).getMapAsync(this);
                 break;
             case "date":
                 TextView txtDate = findViewById(R.id.lblTripDate);
@@ -295,15 +247,19 @@ public class TripDetailActivity extends AppCompatActivity implements OnMapReadyC
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        Double lat = Double.parseDouble(this.trip.getLatitude());
-        Double lon = Double.parseDouble(this.trip.getLongitude());
-        LatLng place = new LatLng(lat, lon);
-        Marker marker = mMap.addMarker(new MarkerOptions().position(place).title("Meeting point"));
-        marker.showInfoWindow();
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(place));
-        mMap.setMinZoomPreference(10);
-        mMap.setMaxZoomPreference(100);
+        if(mMap != null) {
+            mMap.clear();
+            Double lat = Double.parseDouble(this.trip.getLatitude());
+            Double lon = Double.parseDouble(this.trip.getLongitude());
+            LatLng place = new LatLng(lat, lon);
+            Marker marker = mMap.addMarker(new MarkerOptions().position(place).title("Meeting point"));
+            marker.showInfoWindow();
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(place));
+            mMap.setMinZoomPreference(10);
+            mMap.setMaxZoomPreference(100);
+        }
     }
+
 }
 
 

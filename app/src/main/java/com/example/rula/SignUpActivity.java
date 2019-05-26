@@ -88,7 +88,7 @@ public class SignUpActivity extends AppCompatActivity {
         String locationTag = extras.getString("locationTag");
         String date = extras.getString("date");
         String difficulty = extras.getString("difficulty");
-        String maxPeople = extras.getString("available");
+        String maxPeople = extras.getString("maxPeople");
         String nBookings = extras.getString("nBookings");
         Location location = new Location(latitude, longitude, locationTag);
         return new Trip(key, name, location, difficulty, date, maxPeople, nBookings);
