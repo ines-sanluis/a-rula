@@ -29,9 +29,9 @@
         android:layout_below="@+id/lblUpcoming"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_marginTop="47dp"
-        android:layout_marginEnd="26dp"
-        android:layout_marginRight="26dp">
+        android:layout_marginTop="22dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginRight="15dp">
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
@@ -41,7 +41,6 @@
                 android:id="@+id/trips_list_view"
                 android:layout_width="358dp"
                 android:layout_height="436dp"
-                android:layout_marginTop="16dp"
                 android:cacheColorHint="@color/common_google_signin_btn_text_dark_focused"
                 android:divider="@color/colorPrimaryDark"
                 app:layout_constraintStart_toStartOf="parent"

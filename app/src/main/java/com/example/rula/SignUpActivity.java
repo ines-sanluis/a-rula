@@ -88,9 +88,10 @@ public class SignUpActivity extends AppCompatActivity {
         String locationTag = extras.getString("locationTag");
         String date = extras.getString("date");
         String difficulty = extras.getString("difficulty");
-        String available = extras.getString("available");
+        String maxPeople = extras.getString("available");
+        String nBookings = extras.getString("nBookings");
         Location location = new Location(latitude, longitude, locationTag);
-        return new Trip(key, name, location, difficulty, date, available);
+        return new Trip(key, name, location, difficulty, date, maxPeople, nBookings);
     }
 
     private boolean isValidEmail(String email) {

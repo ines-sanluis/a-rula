@@ -5,6 +5,11 @@ public class Location {
     private String longitude;
     private String tag;
 
+    public Location(){
+        this.latitude = "";
+        this.longitude = "";
+        this.tag = "";
+    }
     public Location(String latitude, String longitude, String tag){
         this.latitude = latitude;
         this.longitude = longitude;
@@ -15,11 +20,17 @@ public class Location {
         return this.latitude;
     }
 
+    public void setLatitude(String latitude){this.latitude = latitude; }
+
     public String getLongitude(){
         return this.longitude;
     }
 
+    public void setLongitude(String longitude){ this.longitude = longitude; }
+
     public String getTag(){
         return this.tag;
     }
+
+    public void setTag(String tag){ this.tag = tag; }
 }

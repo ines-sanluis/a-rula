@@ -1,8 +1,11 @@
 package com.example.rula;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -15,8 +18,12 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 
 public class TripDetailActivity extends AppCompatActivity implements OnMapReadyCallback{
@@ -24,6 +31,7 @@ public class TripDetailActivity extends AppCompatActivity implements OnMapReadyC
     private GoogleMap mMap;
     private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
     private Trip trip = null;
+    private Bundle extras = null;
 
     private Bundle stuff = new Bundle();
 
@@ -32,47 +40,99 @@ public class TripDetailActivity extends AppCompatActivity implements OnMapReadyC
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trip_detail);
 
-        myDatabase = FirebaseDatabase.getInstance().getReference();
         Intent intent = getIntent();
+        extras = intent.getExtras();
+        trip = new Trip(extras.getString("key"));
+        myDatabase = FirebaseDatabase.getInstance().getReference().child(trip.getKey());
 
-        trip = createTrip(intent.getExtras());
-        ((MapFragment) getFragmentManager().findFragmentById(R.id.myMap)).getMapAsync(this);
-        Button btnRegister = findViewById(R.id.btnReturn);
-        if(Integer.parseInt(trip.getAvailable()) <= 0 ){
-            btnRegister.setClickable(false);
-            btnRegister.setBackgroundColor(0xFFEDEDED);
-            btnRegister.setTextColor(0xFFC6C6C6);
-            TextView lbl = findViewById(R.id.lblAvailable);
-            lbl.setText("No available places");
-            TextView txtAvailable = findViewById(R.id.txtAvailable);
-            txtAvailable.setVisibility(View.INVISIBLE);
+        myDatabase.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                updateTrip(dataSnapshot);
+                updateFields(dataSnapshot.getKey());
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                updateTrip(dataSnapshot);
+                updateFields(dataSnapshot.getKey());
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+
+
+    private Trip createTrip(String key, DataSnapshot dataSnapshot){
+        String name = (String) dataSnapshot.getValue();
+        String latitude = (String) dataSnapshot.child("lat").getValue();
+        String longitude =(String) dataSnapshot.child("lon").getValue();
+        String locationTag = (String) dataSnapshot.child("tag").getValue();
+        String date = (String) dataSnapshot.getValue();
+        String difficulty = (String) dataSnapshot.getValue();
+        String maxPeople = (String) dataSnapshot.getValue();
+        long nBookings = dataSnapshot.getChildrenCount();
+        Location location = new Location(latitude, longitude, locationTag);
+        return new Trip(key, name, location, difficulty, date, maxPeople, Long.toString(nBookings));
+    }
+
+    private Trip createTrip(Bundle extras){
+        String key = extras.getString("key");
+        String name = extras.getString("name");
+        String latitude = extras.getString("latitude");
+        String longitude = extras.getString("longitude");
+        String locationTag = extras.getString("locationTag");
+        String date = extras.getString("date");
+        String difficulty = extras.getString("difficulty");
+        String nBookings = extras.getString("nBookings");
+        String maxPeople = extras.getString("maxPeople");
+        Location location = new Location(latitude, longitude, locationTag);
+        return new Trip(key, name, location, difficulty, date, maxPeople, nBookings);
+    }
+
+    private void updateTrip(DataSnapshot dataSnapshot){
+        switch(dataSnapshot.getKey()){
+            case "location":
+                this.trip.setLatitude((String) dataSnapshot.child("lat").getValue());
+                this.trip.setLongitude((String) dataSnapshot.child("lon").getValue());
+                this.trip.setLocationTag((String) dataSnapshot.child("tag").getValue());
+                break;
+            case "date": this.trip.setDate((String) dataSnapshot.getValue()); break;
+            case "difficulty":  this.trip.setDifficulty((String) dataSnapshot.getValue()); break;
+            case "name":  this.trip.setName((String) dataSnapshot.getValue()); break;
+            case "bookings": this.trip.setNumberBookings(Long.toString(dataSnapshot.getChildrenCount()));  break;
+            case "maxPeople":  this.trip.setMaxPeople((String) dataSnapshot.getValue()); break;
         }
-
-        setDifficultyIcons(trip.getDifficulty());
-        TextView txtName = findViewById(R.id.lblTripName);
-        txtName.setText(trip.getName());
-        TextView txtDate = findViewById(R.id.lblTripDate);
-        txtDate.setText(trip.getDate());
-        TextView txtLocation = findViewById(R.id.txtLocation);
-        txtLocation.setText(trip.getLocationTag());
-        TextView txtAvailable = findViewById(R.id.txtAvailable);
-        txtAvailable.setText(trip.getAvailable());
-
     }
 
     public void onButtonClick (View v) {
         Intent intent = new Intent(v.getContext(), SignUpActivity.class);
         Bundle extras = new Bundle();
-        extras.putString("key", this.trip.getKey());
-        extras.putString("name", this.trip.getName());
-        extras.putString("latitude", this.trip.getLatitude());
-        extras.putString("longitude", this.trip.getLongitude());
-        extras.putString("date", this.trip.getDate());
-        extras.putString("difficulty", this.trip.getDifficulty());
-        extras.putString("available", this.trip.getAvailable());
-        extras.putString("locationTag", this.trip.getLocationTag());
+        extras.putString("key", trip.getKey());
+        extras.putString("name", trip.getName());
+        extras.putString("latitude", trip.getLatitude());
+        extras.putString("longitude", trip.getLongitude());
+        extras.putString("date", trip.getDate());
+        extras.putString("difficulty", trip.getDifficulty());
+        extras.putString("maxPeople", trip.getMaxPeople());
+        extras.putString("nBookings", trip.getNumberBookings());
+        extras.putString("locationTag", trip.getLocationTag());
         intent.putExtras(extras);
-        intent.putExtras(stuff);
         startActivity(intent);
     }
 
@@ -154,18 +214,83 @@ public class TripDetailActivity extends AppCompatActivity implements OnMapReadyC
         }
     }
 
-    private Trip createTrip(Bundle extras){
-        String key = extras.getString("key");
-        String name = extras.getString("name");
-        String latitude = extras.getString("latitude");
-        String longitude = extras.getString("longitude");
-        String locationTag = extras.getString("locationTag");
-        String date = extras.getString("date");
-        String difficulty = extras.getString("difficulty");
-        String available = extras.getString("available");
-        Location location = new Location(latitude, longitude, locationTag);
-        return new Trip(key, name, location, difficulty, date, available);
+    private void updateFields(){
+        ((MapFragment) getFragmentManager().findFragmentById(R.id.myMap)).getMapAsync(this);
+        Button btnRegister = findViewById(R.id.btnBook);
+        if(Integer.parseInt(trip.getAvailable()) <= 0 ){
+            btnRegister.setVisibility(View.INVISIBLE);
+            TextView lbl = findViewById(R.id.lblAvailable);
+            lbl.setText("No available places");
+            TextView txtAvailable = findViewById(R.id.txtAvailable);
+            txtAvailable.setVisibility(View.INVISIBLE);
+        }
+
+        setDifficultyIcons(trip.getDifficulty());
+        TextView txtName = findViewById(R.id.lblTripName);
+        txtName.setText(trip.getName());
+        TextView txtDate = findViewById(R.id.lblTripDate);
+        txtDate.setText(trip.getDate());
+        TextView txtLocation = findViewById(R.id.txtLocation);
+        txtLocation.setText(trip.getLocationTag());
+        TextView txtAvailable = findViewById(R.id.txtAvailable);
+        txtAvailable.setText(trip.getAvailable());
     }
+
+    private void updateFields(String key){
+        TextView txtAvailable = null;
+        Button btnRegister = null;
+        switch(key){
+            case "location":
+                TextView txtLocation = findViewById(R.id.txtLocation);
+                txtLocation.setText(trip.getLocationTag());
+                ((MapFragment) getFragmentManager().findFragmentById(R.id.myMap)).getMapAsync(this);
+                break;
+            case "date":
+                TextView txtDate = findViewById(R.id.lblTripDate);
+                txtDate.setText(trip.getDate());
+                break;
+            case "difficulty":
+                setDifficultyIcons(trip.getDifficulty());
+                break;
+            case "name":
+                TextView txtName = findViewById(R.id.lblTripName);
+                txtName.setText(trip.getName());
+                break;
+            case "bookings":
+                txtAvailable = findViewById(R.id.txtAvailable);
+                txtAvailable.setText(trip.getAvailable());
+                /*
+                btnRegister = findViewById(R.id.btnReturn);
+                if(Integer.parseInt(trip.getAvailable()) <= 0 ){
+                    btnRegister.setClickable(false);
+                    btnRegister.setBackgroundColor(0xFFEDEDED);
+                    btnRegister.setTextColor(0xFFC6C6C6);
+                    TextView lbl = findViewById(R.id.lblAvailable);
+                    lbl.setText("No available places");
+                    txtAvailable = findViewById(R.id.txtAvailable);
+                    txtAvailable.setVisibility(View.INVISIBLE);
+                }*/
+                break;
+            case "maxPeople":
+                txtAvailable = findViewById(R.id.txtAvailable);
+                txtAvailable.setText(trip.getAvailable());
+                /*
+                btnRegister = findViewById(R.id.btnReturn);
+                if(Integer.parseInt(trip.getAvailable()) <= 0 ){
+                    btnRegister.setClickable(false);
+                    btnRegister.setBackgroundColor(0xFFEDEDED);
+                    btnRegister.setTextColor(0xFFC6C6C6);
+                    TextView lbl = findViewById(R.id.lblAvailable);
+                    lbl.setText("No available places");
+                    txtAvailable = findViewById(R.id.txtAvailable);
+                    txtAvailable.setVisibility(View.INVISIBLE);
+                }
+                */
+                break;
+        }
+
+    }
+
 
     @Override
     public void onMapReady(GoogleMap googleMap) {

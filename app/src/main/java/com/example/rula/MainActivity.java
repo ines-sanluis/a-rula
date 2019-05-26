@@ -63,6 +63,9 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                //temporary solution
+                finish();
+                startActivity(getIntent());
                 /*
                 String key = dataSnapshot.getKey();
                 Integer position = myKeys.indexOf(key);
@@ -106,11 +109,13 @@ public class MainActivity extends AppCompatActivity {
                         case "difficulty": difficulty = (String) attribute.getValue(); break;
                         case "maxPeople": maxPeople = (String) attribute.getValue(); break;
                         case "name": name = (String) attribute.getValue(); break;
-                        case "bookings": nBookings = attribute.getChildrenCount(); break;
+                        case "bookings":
+                            nBookings = attribute.getChildrenCount();
+                            break;
                     }
                 }
                 Location location = new Location(latitude, longitude, locationTag);
-                return new Trip(key, name, location, difficulty, date, Long.toString(Long.parseLong(maxPeople)-nBookings));
+                return new Trip(key, name, location, difficulty, date, maxPeople, Long.toString(nBookings));
             }
         });
 
@@ -128,7 +133,8 @@ public class MainActivity extends AppCompatActivity {
                 extras.putString("longitude", selected.getLongitude());
                 extras.putString("date", selected.getDate());
                 extras.putString("difficulty", selected.getDifficulty());
-                extras.putString("available", selected.getAvailable());
+                extras.putString("maxPeople", selected.getMaxPeople());
+                extras.putString("nBookings", selected.getNumberBookings());
                 extras.putString("locationTag", selected.getLocationTag());
                 intent.putExtras(extras);
 
