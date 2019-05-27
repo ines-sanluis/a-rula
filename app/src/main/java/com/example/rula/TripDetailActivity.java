@@ -5,17 +5,16 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -24,17 +23,14 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 
 public class TripDetailActivity extends AppCompatActivity implements OnMapReadyCallback{
-    private DatabaseReference myDatabase;
+    private DatabaseReference tripReference;
     private GoogleMap mMap;
-    private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
     private Trip trip = null;
     private Bundle extras = null;
 
-    private Bundle stuff = new Bundle();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,10 +43,10 @@ public class TripDetailActivity extends AppCompatActivity implements OnMapReadyC
         trip = new Trip(extras.getString("key"), location, extras.getString("maxPeople"), extras.getString("nBookings"));
         checkBookButton();
 
-        myDatabase = FirebaseDatabase.getInstance().getReference().child(trip.getKey());
+        tripReference = FirebaseDatabase.getInstance().getReference().child(trip.getKey());
         ((MapFragment) getFragmentManager().findFragmentById(R.id.myMap)).getMapAsync(this);
 
-        myDatabase.addChildEventListener(new ChildEventListener() {
+        tripReference.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 updateTrip(dataSnapshot);
@@ -65,7 +61,9 @@ public class TripDetailActivity extends AppCompatActivity implements OnMapReadyC
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
+                Toast.makeText(getBaseContext(), "This trip has just been cancelled", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(getBaseContext(), MainActivity.class);
+                startActivity(intent);
             }
 
             @Override
@@ -91,7 +89,14 @@ public class TripDetailActivity extends AppCompatActivity implements OnMapReadyC
             case "date": this.trip.setDate((String) dataSnapshot.getValue()); break;
             case "difficulty":  this.trip.setDifficulty((String) dataSnapshot.getValue()); break;
             case "name":  this.trip.setName((String) dataSnapshot.getValue()); break;
-            case "bookings": this.trip.setNumberBookings(Long.toString(dataSnapshot.getChildrenCount()));  break;
+            case "bookings":
+                long nBookings = 0;
+                if(dataSnapshot.getChildrenCount() != 0) {
+                    for (DataSnapshot reservation : dataSnapshot.getChildren()) {
+                        nBookings += Long.parseLong((String) reservation.child("numOfPeople").getValue());
+                    }
+                }
+                this.trip.setNumberBookings(Long.toString(nBookings));  break;
             case "maxPeople":  this.trip.setMaxPeople((String) dataSnapshot.getValue()); break;
         }
     }
@@ -196,7 +201,6 @@ public class TripDetailActivity extends AppCompatActivity implements OnMapReadyC
             case "location":
                 TextView txtLocation = findViewById(R.id.txtLocation);
                 txtLocation.setText(trip.getLocationTag());
-
                 updateMap();
                 break;
             case "date":
@@ -221,7 +225,6 @@ public class TripDetailActivity extends AppCompatActivity implements OnMapReadyC
                 checkBookButton();
                 break;
         }
-
     }
 
 
@@ -259,7 +262,6 @@ public class TripDetailActivity extends AppCompatActivity implements OnMapReadyC
             btnRegister.setClickable(true);
             btnRegister.setBackgroundColor(0xFFD81B60);
             btnRegister.setTextColor(0xFFFFFFFF);
-            //btnRegister.setText
             lbl = findViewById(R.id.lblAvailable);
             lbl.setText("Available places");
             txtAvailable = findViewById(R.id.txtAvailable);

@@ -1,6 +1,8 @@
 package com.example.rula;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,14 +12,17 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class SignUpActivity extends AppCompatActivity {
 
-    private DatabaseReference reference;
+    private DatabaseReference myBookings;
+    private DatabaseReference tripReference;
     private Trip trip;
 
     @Override
@@ -27,13 +32,61 @@ public class SignUpActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         trip = createTrip(intent.getExtras());
-        reference = FirebaseDatabase.getInstance().getReference().child(trip.getKey()).child("bookings");
+        myBookings = FirebaseDatabase.getInstance().getReference().child(trip.getKey()).child("bookings");
+        tripReference  = FirebaseDatabase.getInstance().getReference().child(trip.getKey());
 
+        tripReference.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                if(dataSnapshot.getKey().equals("name")){
+                    trip.setName((String) dataSnapshot.getValue());
+                    TextView txtName = findViewById(R.id.lblTripName);
+                    txtName.setText(trip.getName());
+                }else if(dataSnapshot.getKey().equals("date")){
+                    trip.setDate((String) dataSnapshot.getValue());
+                    TextView txtDate = findViewById(R.id.lblTripDate);
+                    txtDate.setText(trip.getDate());
+                }
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                if(dataSnapshot.getKey().equals("date")){
+                    Toast.makeText(getBaseContext(), "The date has just been updated", Toast.LENGTH_LONG);
+                    trip.setDate((String) dataSnapshot.getValue());
+                    TextView txtDate = findViewById(R.id.lblTripDate);
+                    txtDate.setText(trip.getDate());
+                }else if(dataSnapshot.getKey().equals("name")){
+                    Toast.makeText(getBaseContext(), "The trip name has just been updated", Toast.LENGTH_LONG);
+                    trip.setName((String) dataSnapshot.getValue());
+                    TextView txtName = findViewById(R.id.lblTripName);
+                    txtName.setText(trip.getName());
+                }else{
+                    Toast.makeText(getBaseContext(), "The trip details have just been updated. Go back to check them out", Toast.LENGTH_LONG);
+                }
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                Toast.makeText(getBaseContext(), "This trip has just been cancelled", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(getBaseContext(), MainActivity.class);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
         TextView txtName = findViewById(R.id.lblTripName);
         txtName.setText(trip.getName());
         TextView txtDate = findViewById(R.id.lblTripDate);
         txtDate.setText(trip.getDate());
-        ActionBar toolbar = getSupportActionBar();
     }
 
     public void onReturnButtonClick (View v) {
@@ -73,7 +126,7 @@ public class SignUpActivity extends AppCompatActivity {
         Spinner s = findViewById(R.id.txtPeople);
         String nPeople = s.getSelectedItem().toString();
         if(correct) {
-            reference.push().setValue(new Reservation(name, email, phone, nPeople));
+            myBookings.push().setValue(new Reservation(name, email, phone, nPeople));
             Toast.makeText(getBaseContext(), "Data inserted successfully!", Toast.LENGTH_LONG).show();
             Intent intent = new Intent(getBaseContext(), MainActivity.class);
             startActivity(intent);
@@ -110,14 +163,15 @@ public class SignUpActivity extends AppCompatActivity {
             case android.R.id.home:
                 Intent intent = new Intent(this, TripDetailActivity.class);
                 Bundle extras = new Bundle();
-                extras.putString("key", trip.getKey());
-                extras.putString("name", trip.getName());
-                extras.putString("latitude", trip.getLatitude());
-                extras.putString("longitude", trip.getLongitude());
-                extras.putString("date", trip.getDate());
-                extras.putString("difficulty", trip.getDifficulty());
-                extras.putString("available", trip.getAvailable());
-                extras.putString("locationTag", trip.getLocationTag());
+                extras.putString("key", this.trip.getKey());
+                extras.putString("name", this.trip.getName());
+                extras.putString("latitude", this.trip.getLatitude());
+                extras.putString("longitude", this.trip.getLongitude());
+                extras.putString("date", this.trip.getDate());
+                extras.putString("difficulty", this.trip.getDifficulty());
+                extras.putString("maxPeople", this.trip.getMaxPeople());
+                extras.putString("nBookings", this.trip.getNumberBookings());
+                extras.putString("locationTag", this.trip.getLocationTag());
                 intent.putExtras(extras);
                 startActivity(intent);
                 break;

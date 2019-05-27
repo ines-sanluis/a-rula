@@ -110,7 +110,11 @@ public class MainActivity extends AppCompatActivity {
                         case "maxPeople": maxPeople = (String) attribute.getValue(); break;
                         case "name": name = (String) attribute.getValue(); break;
                         case "bookings":
-                            nBookings = attribute.getChildrenCount();
+                            if(attribute.getChildrenCount() != 0) {
+                                for (DataSnapshot reservation : attribute.getChildren()) {
+                                    nBookings += Long.parseLong((String) reservation.child("numOfPeople").getValue());
+                                }
+                            }
                             break;
                     }
                 }
