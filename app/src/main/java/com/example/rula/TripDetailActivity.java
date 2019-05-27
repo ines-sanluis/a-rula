@@ -10,7 +10,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -95,12 +94,11 @@ public class TripDetailActivity extends AppCompatActivity implements OnMapReadyC
             case "bookings":
                 long nBookings = 0;
                 if(dataSnapshot.getChildrenCount() != 0) {
-                    for (DataSnapshot reservation : dataSnapshot.getChildren()) {
-                        nBookings += Long.parseLong((String) reservation.child("numOfPeople").getValue());
-                    }
+                    for (DataSnapshot reservation : dataSnapshot.getChildren()) nBookings += Long.parseLong((String) reservation.child("numOfPeople").getValue());
                 }
                 this.trip.setNumberBookings(Long.toString(nBookings));  break;
             case "maxPeople":  this.trip.setMaxPeople((String) dataSnapshot.getValue()); break;
+            case "description": this.trip.setDescription((String) dataSnapshot.getValue()); break;
         }
     }
 
@@ -116,6 +114,7 @@ public class TripDetailActivity extends AppCompatActivity implements OnMapReadyC
         extras.putString("maxPeople", trip.getMaxPeople());
         extras.putString("nBookings", trip.getNumberBookings());
         extras.putString("locationTag", trip.getLocationTag());
+        extras.putString("description", trip.getDescription());
         intent.putExtras(extras);
         startActivity(intent);
     }
@@ -199,7 +198,7 @@ public class TripDetailActivity extends AppCompatActivity implements OnMapReadyC
     }
 
     private void updateFields(String key){
-        TextView txtAvailable = null;
+        TextView txtAvailable;
         switch(key){
             case "location":
                 TextView txtLocation = findViewById(R.id.txtLocation);
@@ -227,6 +226,9 @@ public class TripDetailActivity extends AppCompatActivity implements OnMapReadyC
                 txtAvailable.setText(trip.getAvailable());
                 checkBookButton();
                 break;
+            case "description":
+                TextView txtDescription = findViewById(R.id.txtDescription);
+                txtDescription.setText(trip.getDescription());
         }
     }
 
@@ -245,8 +247,8 @@ public class TripDetailActivity extends AppCompatActivity implements OnMapReadyC
         Marker marker = mMap.addMarker(new MarkerOptions().position(place).title("Meeting point"));
         marker.showInfoWindow();
         mMap.moveCamera(CameraUpdateFactory.newLatLng(place));
-        mMap.setMinZoomPreference(10);
-        mMap.setMaxZoomPreference(100);
+        mMap.setMinZoomPreference(7);
+        mMap.setMaxZoomPreference(7);
     }
 
     private void checkBookButton(){

@@ -164,8 +164,9 @@ public class SignUpActivity extends AppCompatActivity {
         String difficulty = extras.getString("difficulty");
         String maxPeople = extras.getString("maxPeople");
         String nBookings = extras.getString("nBookings");
+        String description = extras.getString("description");
         Location location = new Location(latitude, longitude, locationTag);
-        return new Trip(key, name, location, difficulty, date, maxPeople, nBookings);
+        return new Trip(key, name, location, difficulty, date, maxPeople, nBookings, description);
     }
 
     private boolean isValidEmail(String email) {
@@ -191,15 +192,12 @@ public class SignUpActivity extends AppCompatActivity {
     private void goBackTripDetail(){
         Intent intent = new Intent(this, TripDetailActivity.class);
         Bundle extras = new Bundle();
-        extras.putString("key", this.trip.getKey());
-        extras.putString("name", this.trip.getName());
-        extras.putString("latitude", this.trip.getLatitude());
-        extras.putString("longitude", this.trip.getLongitude());
-        extras.putString("date", this.trip.getDate());
-        extras.putString("difficulty", this.trip.getDifficulty());
-        extras.putString("maxPeople", this.trip.getMaxPeople());
-        extras.putString("nBookings", this.trip.getNumberBookings());
-        extras.putString("locationTag", this.trip.getLocationTag());
+        extras.putString("key", trip.getKey());
+        extras.putString("latitude", trip.getLatitude());
+        extras.putString("longitude", trip.getLongitude());
+        extras.putString("locationTag", trip.getLocationTag());
+        extras.putString("maxPeople", trip.getMaxPeople());
+        extras.putString("nBookings", trip.getNumberBookings());
         intent.putExtras(extras);
         startActivity(intent);
     }

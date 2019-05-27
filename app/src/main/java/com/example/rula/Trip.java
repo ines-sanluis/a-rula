@@ -13,6 +13,7 @@ public class Trip {
     private String maxPeople;
     private String nBookings;
     private String available;
+    private String description;
 
 
     public Trip(String key, Location location, String maxPeople, String nBookings){
@@ -21,13 +22,14 @@ public class Trip {
         this.difficulty = "";
         this.location = location;
         this.date = "";
+        this.description = "";
         this.maxPeople = maxPeople;
         this.nBookings = nBookings;
         this.available = Long.toString(Long.parseLong(maxPeople)- Long.parseLong(nBookings));
 
     }
 
-    public Trip(String key, String name, Location location, String difficulty, String date, String maxPeople, String nBookings){
+    public Trip(String key, String name, Location location, String difficulty, String date, String maxPeople, String nBookings, String description){
         this.key = key;
         this.name = name;
         this.location = location;
@@ -36,6 +38,7 @@ public class Trip {
         this.maxPeople = maxPeople;
         this.nBookings = nBookings;
         this.available = Long.toString(Long.parseLong(maxPeople)- Long.parseLong(nBookings));
+        this.description = description;
     }
 
     public String getKey(){ return this.key; }
@@ -58,6 +61,7 @@ public class Trip {
     public String getAvailable() { return this.available; }
     public String getMaxPeople() { return this.maxPeople; }
     public String getNumberBookings(){ return this.nBookings; }
+    public String getDescription(){ return this.description; }
 
 
 
@@ -79,5 +83,8 @@ public class Trip {
         this.nBookings = nBookings;
         if(maxPeople.equals("")) this.available = "0";
         else this.available = Long.toString(Long.parseLong(maxPeople)- Long.parseLong(nBookings));
+    }
+    public void setDescription(String description){
+        this.description = description;
     }
 }

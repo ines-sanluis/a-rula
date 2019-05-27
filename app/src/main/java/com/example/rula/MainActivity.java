@@ -95,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
                 String latitude = null;
                 String longitude = null;
                 String locationTag = null;
+                String description = null;
                 long nBookings = 0;
 
                 for(DataSnapshot attribute : dataSnapshot.getChildren()) { //trips
@@ -109,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
                         case "difficulty": difficulty = (String) attribute.getValue(); break;
                         case "maxPeople": maxPeople = (String) attribute.getValue(); break;
                         case "name": name = (String) attribute.getValue(); break;
+                        case "description": description = (String) attribute.getValue(); break;
                         case "bookings":
                             if(attribute.getChildrenCount() != 0) {
                                 for (DataSnapshot reservation : attribute.getChildren()) {
@@ -119,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
                 Location location = new Location(latitude, longitude, locationTag);
-                return new Trip(key, name, location, difficulty, date, maxPeople, Long.toString(nBookings));
+                return new Trip(key, name, location, difficulty, date, maxPeople, Long.toString(nBookings), description);
             }
         });
 
@@ -132,16 +134,13 @@ public class MainActivity extends AppCompatActivity {
 
                 Bundle extras = new Bundle();
                 extras.putString("key", selected.getKey());
-                extras.putString("name", selected.getName());
                 extras.putString("latitude", selected.getLatitude());
                 extras.putString("longitude", selected.getLongitude());
-                extras.putString("date", selected.getDate());
-                extras.putString("difficulty", selected.getDifficulty());
+                extras.putString("locationTag", selected.getLocationTag());
                 extras.putString("maxPeople", selected.getMaxPeople());
                 extras.putString("nBookings", selected.getNumberBookings());
-                extras.putString("locationTag", selected.getLocationTag());
-                intent.putExtras(extras);
 
+                intent.putExtras(extras);
                 startActivity(intent);
             }
         });
