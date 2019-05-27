@@ -1,6 +1,8 @@
 package com.example.rula;
 
 
+import android.util.Log;
+
 public class Trip {
 
     private String key;
@@ -21,7 +23,7 @@ public class Trip {
         this.date = "";
         this.maxPeople = maxPeople;
         this.nBookings = nBookings;
-        this.available = "0";
+        this.available = Long.toString(Long.parseLong(maxPeople)- Long.parseLong(nBookings));
 
     }
 

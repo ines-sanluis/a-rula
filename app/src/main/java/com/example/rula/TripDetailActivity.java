@@ -45,7 +45,7 @@ public class TripDetailActivity extends AppCompatActivity implements OnMapReadyC
         extras = intent.getExtras();
         Location location = new Location(extras.getString("latitude"), extras.getString("longitude"), extras.getString("locationTag"));
         trip = new Trip(extras.getString("key"), location, extras.getString("maxPeople"), extras.getString("nBookings"));
-        //checkBookButton();
+        checkBookButton();
 
         myDatabase = FirebaseDatabase.getInstance().getReference().child(trip.getKey());
         ((MapFragment) getFragmentManager().findFragmentById(R.id.myMap)).getMapAsync(this);
@@ -245,14 +245,26 @@ public class TripDetailActivity extends AppCompatActivity implements OnMapReadyC
 
     private void checkBookButton(){
         Button btnRegister = findViewById(R.id.btnReturn);
+        TextView txtAvailable = null;
+        TextView lbl = null;
         if(Integer.parseInt(trip.getAvailable()) <= 0 ){
             btnRegister.setClickable(false);
             btnRegister.setBackgroundColor(0xFFEDEDED);
             btnRegister.setTextColor(0xFFC6C6C6);
-            TextView lbl = findViewById(R.id.lblAvailable);
+            lbl = findViewById(R.id.lblAvailable);
             lbl.setText("No available places");
-            TextView txtAvailable = findViewById(R.id.txtAvailable);
+            txtAvailable = findViewById(R.id.txtAvailable);
             txtAvailable.setVisibility(View.INVISIBLE);
+        }else{
+            btnRegister.setClickable(true);
+            btnRegister.setBackgroundColor(0xFFD81B60);
+            btnRegister.setTextColor(0xFFFFFFFF);
+            //btnRegister.setText
+            lbl = findViewById(R.id.lblAvailable);
+            lbl.setText("Available places");
+            txtAvailable = findViewById(R.id.txtAvailable);
+            txtAvailable.setVisibility(View.VISIBLE);
+            txtAvailable.setText(this.trip.getAvailable());
         }
     }
 }
