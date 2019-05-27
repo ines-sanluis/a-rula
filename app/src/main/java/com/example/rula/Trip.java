@@ -13,14 +13,14 @@ public class Trip {
     private String available;
 
 
-    public Trip(String key){
+    public Trip(String key, Location location, String maxPeople, String nBookings){
         this.key = key;
         this.name = "";
         this.difficulty = "";
-        this.location = new Location();
+        this.location = location;
         this.date = "";
-        this.maxPeople = "0";
-        this.nBookings = "0";
+        this.maxPeople = maxPeople;
+        this.nBookings = nBookings;
         this.available = "0";
 
     }
@@ -63,7 +63,7 @@ public class Trip {
     public void setLocationTag(String tag){
         this.location.setTag(tag);
     }
-    public void setLongitude(String longitude){this.location.setLatitude(longitude);}
+    public void setLongitude(String longitude){this.location.setLongitude(longitude);}
     public void setLatitude(String latitude){this.location.setLatitude(latitude);}
     public void setDifficulty(String difficulty){ this.difficulty = difficulty; }
     public void setDate(String date){ this.date =  date;}

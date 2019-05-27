@@ -43,7 +43,10 @@ public class TripDetailActivity extends AppCompatActivity implements OnMapReadyC
 
         Intent intent = getIntent();
         extras = intent.getExtras();
-        trip = new Trip(extras.getString("key"));
+        Location location = new Location(extras.getString("latitude"), extras.getString("longitude"), extras.getString("locationTag"));
+        trip = new Trip(extras.getString("key"), location, extras.getString("maxPeople"), extras.getString("nBookings"));
+        //checkBookButton();
+
         myDatabase = FirebaseDatabase.getInstance().getReference().child(trip.getKey());
         ((MapFragment) getFragmentManager().findFragmentById(R.id.myMap)).getMapAsync(this);
 
@@ -52,14 +55,12 @@ public class TripDetailActivity extends AppCompatActivity implements OnMapReadyC
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 updateTrip(dataSnapshot);
                 updateFields(dataSnapshot.getKey());
-
             }
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 updateTrip(dataSnapshot);
                 updateFields(dataSnapshot.getKey());
-
             }
 
             @Override
@@ -191,11 +192,12 @@ public class TripDetailActivity extends AppCompatActivity implements OnMapReadyC
 
     private void updateFields(String key){
         TextView txtAvailable = null;
-        Button btnRegister = null;
         switch(key){
             case "location":
                 TextView txtLocation = findViewById(R.id.txtLocation);
                 txtLocation.setText(trip.getLocationTag());
+
+                updateMap();
                 break;
             case "date":
                 TextView txtDate = findViewById(R.id.lblTripDate);
@@ -211,33 +213,12 @@ public class TripDetailActivity extends AppCompatActivity implements OnMapReadyC
             case "bookings":
                 txtAvailable = findViewById(R.id.txtAvailable);
                 txtAvailable.setText(trip.getAvailable());
-                /*
-                btnRegister = findViewById(R.id.btnReturn);
-                if(Integer.parseInt(trip.getAvailable()) <= 0 ){
-                    btnRegister.setClickable(false);
-                    btnRegister.setBackgroundColor(0xFFEDEDED);
-                    btnRegister.setTextColor(0xFFC6C6C6);
-                    TextView lbl = findViewById(R.id.lblAvailable);
-                    lbl.setText("No available places");
-                    txtAvailable = findViewById(R.id.txtAvailable);
-                    txtAvailable.setVisibility(View.INVISIBLE);
-                }*/
+                checkBookButton();
                 break;
             case "maxPeople":
                 txtAvailable = findViewById(R.id.txtAvailable);
                 txtAvailable.setText(trip.getAvailable());
-                /*
-                btnRegister = findViewById(R.id.btnReturn);
-                if(Integer.parseInt(trip.getAvailable()) <= 0 ){
-                    btnRegister.setClickable(false);
-                    btnRegister.setBackgroundColor(0xFFEDEDED);
-                    btnRegister.setTextColor(0xFFC6C6C6);
-                    TextView lbl = findViewById(R.id.lblAvailable);
-                    lbl.setText("No available places");
-                    txtAvailable = findViewById(R.id.txtAvailable);
-                    txtAvailable.setVisibility(View.INVISIBLE);
-                }
-                */
+                checkBookButton();
                 break;
         }
 
@@ -247,19 +228,33 @@ public class TripDetailActivity extends AppCompatActivity implements OnMapReadyC
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        if(mMap != null) {
-            mMap.clear();
-            Double lat = Double.parseDouble(this.trip.getLatitude());
-            Double lon = Double.parseDouble(this.trip.getLongitude());
-            LatLng place = new LatLng(lat, lon);
-            Marker marker = mMap.addMarker(new MarkerOptions().position(place).title("Meeting point"));
-            marker.showInfoWindow();
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(place));
-            mMap.setMinZoomPreference(10);
-            mMap.setMaxZoomPreference(100);
-        }
+        updateMap();
     }
 
+    private void updateMap(){
+        mMap.clear();
+        Double lat = Double.parseDouble(this.trip.getLatitude());
+        Double lon = Double.parseDouble(this.trip.getLongitude());
+        LatLng place = new LatLng(lat, lon);
+        Marker marker = mMap.addMarker(new MarkerOptions().position(place).title("Meeting point"));
+        marker.showInfoWindow();
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(place));
+        mMap.setMinZoomPreference(10);
+        mMap.setMaxZoomPreference(100);
+    }
+
+    private void checkBookButton(){
+        Button btnRegister = findViewById(R.id.btnReturn);
+        if(Integer.parseInt(trip.getAvailable()) <= 0 ){
+            btnRegister.setClickable(false);
+            btnRegister.setBackgroundColor(0xFFEDEDED);
+            btnRegister.setTextColor(0xFFC6C6C6);
+            TextView lbl = findViewById(R.id.lblAvailable);
+            lbl.setText("No available places");
+            TextView txtAvailable = findViewById(R.id.txtAvailable);
+            txtAvailable.setVisibility(View.INVISIBLE);
+        }
+    }
 }
 
 
