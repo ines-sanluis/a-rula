@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -18,6 +19,9 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SignUpActivity extends AppCompatActivity {
 
@@ -34,41 +38,58 @@ public class SignUpActivity extends AppCompatActivity {
         trip = createTrip(intent.getExtras());
         myBookings = FirebaseDatabase.getInstance().getReference().child(trip.getKey()).child("bookings");
         tripReference  = FirebaseDatabase.getInstance().getReference().child(trip.getKey());
+        setSpinner();
 
         tripReference.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                if(dataSnapshot.getKey().equals("name")){
-                    trip.setName((String) dataSnapshot.getValue());
-                    TextView txtName = findViewById(R.id.lblTripName);
-                    txtName.setText(trip.getName());
-                }else if(dataSnapshot.getKey().equals("date")){
-                    trip.setDate((String) dataSnapshot.getValue());
-                    TextView txtDate = findViewById(R.id.lblTripDate);
-                    txtDate.setText(trip.getDate());
-                }
+
             }
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 if(dataSnapshot.getKey().equals("date")){
-                    Toast.makeText(getBaseContext(), "The date has just been updated", Toast.LENGTH_LONG);
+                    Toast.makeText(getBaseContext(), "The date has just been updated", Toast.LENGTH_LONG).show();
                     trip.setDate((String) dataSnapshot.getValue());
                     TextView txtDate = findViewById(R.id.lblTripDate);
                     txtDate.setText(trip.getDate());
                 }else if(dataSnapshot.getKey().equals("name")){
-                    Toast.makeText(getBaseContext(), "The trip name has just been updated", Toast.LENGTH_LONG);
+                    Toast.makeText(getBaseContext(), "The name has just been updated", Toast.LENGTH_LONG).show();
                     trip.setName((String) dataSnapshot.getValue());
                     TextView txtName = findViewById(R.id.lblTripName);
                     txtName.setText(trip.getName());
+                }else if(dataSnapshot.getKey().equals("maxPeople")){
+                    trip.setMaxPeople((String) dataSnapshot.getValue());
+                    if(Integer.parseInt(trip.getAvailable()) <= 0){
+                        Toast.makeText(getBaseContext(), "We are sorry. This trip has just been fully booked", Toast.LENGTH_LONG).show();
+                        goBackTripDetail();
+                    }else{
+                        Toast.makeText(getBaseContext(), "The available places have just been updated", Toast.LENGTH_LONG).show();
+                    }
+                    setSpinner();
+                }else if(dataSnapshot.getKey().equals("bookings")){
+                    long nBookings = 0;
+                    if(dataSnapshot.getChildrenCount() != 0) {
+                        for (DataSnapshot reservation : dataSnapshot.getChildren()) {
+                            nBookings += Long.parseLong((String) reservation.child("numOfPeople").getValue());
+                        }
+                    }
+                    trip.setNumberBookings(Long.toString(nBookings));
+                    if(Integer.parseInt(trip.getAvailable()) <= 0){
+                        Toast.makeText(getBaseContext(), "We are sorry. This trip has just been fully booked", Toast.LENGTH_LONG).show();
+                        goBackTripDetail();
+                    }else{
+                        Toast.makeText(getBaseContext(), "The available places have just been updated", Toast.LENGTH_LONG).show();
+                    }
+                    setSpinner();
                 }else{
-                    Toast.makeText(getBaseContext(), "The trip details have just been updated. Go back to check them out", Toast.LENGTH_LONG);
+                    Toast.makeText(getBaseContext(), "The "+dataSnapshot.getKey()+" has just been updated", Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                Toast.makeText(getBaseContext(), "This trip has just been cancelled", Toast.LENGTH_LONG).show();
+                Toast.makeText(getBaseContext(), "We are sorry. This trip has just been cancelled", Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(getBaseContext(), MainActivity.class);
                 startActivity(intent);
             }
@@ -161,24 +182,35 @@ public class SignUpActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                Intent intent = new Intent(this, TripDetailActivity.class);
-                Bundle extras = new Bundle();
-                extras.putString("key", this.trip.getKey());
-                extras.putString("name", this.trip.getName());
-                extras.putString("latitude", this.trip.getLatitude());
-                extras.putString("longitude", this.trip.getLongitude());
-                extras.putString("date", this.trip.getDate());
-                extras.putString("difficulty", this.trip.getDifficulty());
-                extras.putString("maxPeople", this.trip.getMaxPeople());
-                extras.putString("nBookings", this.trip.getNumberBookings());
-                extras.putString("locationTag", this.trip.getLocationTag());
-                intent.putExtras(extras);
-                startActivity(intent);
+                goBackTripDetail();
                 break;
         }
         return true;
     }
 
+    private void goBackTripDetail(){
+        Intent intent = new Intent(this, TripDetailActivity.class);
+        Bundle extras = new Bundle();
+        extras.putString("key", this.trip.getKey());
+        extras.putString("name", this.trip.getName());
+        extras.putString("latitude", this.trip.getLatitude());
+        extras.putString("longitude", this.trip.getLongitude());
+        extras.putString("date", this.trip.getDate());
+        extras.putString("difficulty", this.trip.getDifficulty());
+        extras.putString("maxPeople", this.trip.getMaxPeople());
+        extras.putString("nBookings", this.trip.getNumberBookings());
+        extras.putString("locationTag", this.trip.getLocationTag());
+        intent.putExtras(extras);
+        startActivity(intent);
+    }
+
+    private void setSpinner(){
+        Spinner spinner1 = (Spinner) findViewById(R.id.txtPeople);
+        List<Integer> spinnerArray = new ArrayList<>();
+        for(int i = 1; i<=Integer.parseInt(trip.getAvailable()); i++) spinnerArray.add(i);
+        ArrayAdapter<Integer> adapter = new ArrayAdapter<Integer>(this,android.R.layout.simple_spinner_dropdown_item,spinnerArray);
+        spinner1.setAdapter(adapter);
+    }
 
 
 }

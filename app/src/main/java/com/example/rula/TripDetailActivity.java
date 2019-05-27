@@ -57,11 +57,14 @@ public class TripDetailActivity extends AppCompatActivity implements OnMapReadyC
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 updateTrip(dataSnapshot);
                 updateFields(dataSnapshot.getKey());
+                if(dataSnapshot.getKey().equals("maxPeople") || dataSnapshot.getKey().equals("bookings")) Toast.makeText(getBaseContext(), "The available places have just been updated", Toast.LENGTH_LONG).show();
+                else Toast.makeText(getBaseContext(), "The "+dataSnapshot.getKey()+" has just been updated", Toast.LENGTH_LONG).show();
+
             }
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                Toast.makeText(getBaseContext(), "This trip has just been cancelled", Toast.LENGTH_LONG).show();
+                Toast.makeText(getBaseContext(), "We are sorry. This trip has just been cancelled", Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(getBaseContext(), MainActivity.class);
                 startActivity(intent);
             }
